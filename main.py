@@ -83,10 +83,13 @@ def receive_message(payload):
 
     if BOT_ID != user_id:
         user_name = get_user_name(user_id)
+        print(user_name)
         channel_name = get_channel_name(channel_id)
+        print(channel_name)
         board = get_boards() 
         board_list = get_first_list(board)
         fetch_cards(board,user_name,text,board_list, channel_name)
+        print(ready)
         return Response(status=200)
     else:
          return 
