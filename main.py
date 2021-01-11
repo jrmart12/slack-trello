@@ -96,4 +96,4 @@ def error_handler(err):
      print("ERROR: " + str(err))
 
 if __name__ == "__main__":
-    app.run
+    app.run()
