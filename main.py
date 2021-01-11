@@ -64,14 +64,14 @@ def fetch_cards(board, slack_handle, comment_text, get_first_list, channel_name)
     for card_data in cards:
         if card_data.name == channel_name:
             result = "Found"
-            card_data.comment(comment_text + " (" + slack_handle +") ")  
+            card_data.comment(comment_text )  
             card_data.set_closed(False)
     if result == "":
         url = f"https://api.trello.com/1/cards"
-        querystring = {"name": slack_handle, "idList": get_first_list.id, "key": TRELLO_API_KEY, "token": TRELLO_API_SECRET}
+        querystring = {"name": channel_name, "idList": get_first_list.id, "key": TRELLO_API_KEY, "token": TRELLO_API_SECRET}
         requests.request("POST", url, params=querystring)
         comment_url = "https://api.trello.com/1/cards/{id}/actions/comments"
-        comment_querystring = {"key": TRELLO_API_KEY, "token": TRELLO_API_SECRET, "text": comment_text + " (" + slack_handle +") "}
+        comment_querystring = {"key": TRELLO_API_KEY, "token": TRELLO_API_SECRET, "text": comment_text}
         requests.request("POST", comment_url, params=comment_querystring)   
 
 @slack_events_adapter.on("message")
