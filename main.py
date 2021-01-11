@@ -60,11 +60,12 @@ def get_first_list(board):
         
 def fetch_cards(board, slack_handle, comment_text, get_first_list):
     result = ""
-    cards = board.all_cards()
+    cards = board.all_cards()   
     for card_data in cards:
         if card_data.name == slack_handle:
             result = "Found"
             card_data.comment(comment_text)  
+            card_data.set_closed(False)
     if result == "":
         url = f"https://api.trello.com/1/cards"
         querystring = {"name": slack_handle, "idList": get_first_list.id, "key": TRELLO_API_KEY, "token": TRELLO_API_SECRET}
@@ -95,4 +96,4 @@ def error_handler(err):
      print("ERROR: " + str(err))
 
 if __name__ == "__main__":
-    app.run(port=58533)
+    app.run
