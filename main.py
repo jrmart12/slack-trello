@@ -89,7 +89,7 @@ def receive_message(payload):
         board = get_boards() 
         board_list = get_first_list(board)
         fetch_cards(board,user_name,text,board_list, channel_name)
-        print(ready)
+        print("ready")
         return Response(status=200)
     else:
          return 
