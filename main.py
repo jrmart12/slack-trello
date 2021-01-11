@@ -46,7 +46,6 @@ def get_boards():
         boards = trello_client.list_boards(board_filter="all")
         board = ""
         for board in boards:
-            board.name
             if board.name == TRELLO_BOARD_NAME:
                 return board
         return None
@@ -88,6 +87,8 @@ def receive_message(payload):
         channel_name = get_channel_name(channel_id)
         print(channel_name)
         board = get_boards() 
+        print(board.name)
+        print(board.id)
         board_list = get_first_list(board)
         fetch_cards(board,user_name,text,board_list, channel_name)
         print("ready")
