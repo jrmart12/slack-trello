@@ -18,7 +18,7 @@ slack_web_client = WebClient(token=os.environ['SLACK_BOT_TOKEN'])
 BOT_ID = slack_web_client.api_call("auth.test")['user_id']
 TRELLO_API_KEY = os.environ.get('TRELLO_API_KEY')
 TRELLO_API_SECRET = os.environ.get('TRELLO_API_SECRET')
-
+TRELLO_BOARD_NAME = os.environ.get('TRELLO_BOARD_NAME')
 
 trello_client = TrelloClient(
     api_key=TRELLO_API_KEY,
@@ -42,12 +42,12 @@ def get_channel_name(channel_id):
                 channel_name = channel['name']   
         return channel_name
 
-def get_boards(channel_name):
+def get_boards():
         boards = trello_client.list_boards(board_filter="all")
         board = ""
         for board in boards:
             board.name
-            if board.name == channel_name:
+            if board.name == TRELLO_BOARD_NAME:
                 return board
         return None
 
@@ -58,20 +58,20 @@ def get_first_list(board):
         list_array.append(t_list)
     return list_array[0]
         
-def fetch_cards(board, slack_handle, comment_text, get_first_list):
+def fetch_cards(board, slack_handle, comment_text, get_first_list, channel_name):
     result = ""
     cards = board.all_cards()   
     for card_data in cards:
-        if card_data.name == slack_handle:
+        if card_data.name == channel_name:
             result = "Found"
-            card_data.comment(comment_text)  
+            card_data.comment(comment_text + " (" + slack_handle +") ")  
             card_data.set_closed(False)
     if result == "":
         url = f"https://api.trello.com/1/cards"
         querystring = {"name": slack_handle, "idList": get_first_list.id, "key": TRELLO_API_KEY, "token": TRELLO_API_SECRET}
         requests.request("POST", url, params=querystring)
         comment_url = "https://api.trello.com/1/cards/{id}/actions/comments"
-        comment_querystring = {"key": TRELLO_API_KEY, "token": TRELLO_API_SECRET, "text": comment_text}
+        comment_querystring = {"key": TRELLO_API_KEY, "token": TRELLO_API_SECRET, "text": comment_text + " (" + slack_handle +") "}
         requests.request("POST", comment_url, params=comment_querystring)   
 
 @slack_events_adapter.on("message")
@@ -84,9 +84,9 @@ def receive_message(payload):
     if BOT_ID != user_id:
         user_name = get_user_name(user_id)
         channel_name = get_channel_name(channel_id)
-        board = get_boards(channel_name) 
+        board = get_boards() 
         board_list = get_first_list(board)
-        fetch_cards(board,user_name,text,board_list)
+        fetch_cards(board,user_name,text,board_list, channel_name)
         return Response(status=200)
     else:
          return 
