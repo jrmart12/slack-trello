@@ -36,7 +36,7 @@ def get_user_name(user_id):
         return user_name   
         
 def get_channel_name(channel_id):
-        slack_channels = slack_web_client.conversations_list()
+        slack_channels = slack_web_client.conversations_list(types="private_channel, public_channel")
         channel_name = ""
         for channel in slack_channels['channels']:
             if(channel['id']==channel_id):
