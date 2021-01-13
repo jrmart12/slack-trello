@@ -1,15 +1,10 @@
 import os
-import logging
-from flask import Flask, request, Response
+from flask import Flask, Response
 from slack import WebClient
 from slackeventsapi import SlackEventAdapter
-from trello import Board, Card, TrelloClient, List
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import datetime
-from time import sleep
+from trello import TrelloClient
 import requests
-import traceback
-import time
+import threading
 
 app = Flask(__name__)
 
@@ -82,15 +77,16 @@ def receive_message(payload):
     user_id = event.get('user')
     text = event.get('text')
 
-    if BOT_ID != user_id:
-        user_name = get_user_name(user_id)
-        channel_name = get_channel_name(channel_id)
-        board = get_boards() 
-        board_list = get_first_list(board)
-        fetch_cards(board,user_name,text,board_list, channel_name)
-        return Response(status=200)
-    else:
-         return 
+    def main_thread():
+        if BOT_ID != user_id:
+            user_name = get_user_name(user_id)
+            channel_name = get_channel_name(channel_id)
+            board = get_boards() 
+            board_list = get_first_list(board)
+            fetch_cards(board,user_name,text,board_list, channel_name)
+    thread1 = threading.Thread(target=main_thread)
+    thread1.start()
+    return Response(status=200)
 
 @slack_events_adapter.on("error")
 def error_handler(err):
