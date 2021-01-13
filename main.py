@@ -71,7 +71,7 @@ def fetch_cards(board, slack_handle, comment_text, get_first_list, channel_name)
         url = f"https://api.trello.com/1/cards"
         querystring = {"name": channel_name, "idList": get_first_list.id, "key": TRELLO_API_KEY, "token": TRELLO_API_SECRET}
         requests.request("POST", url, params=querystring)
-        time.sleep(10)
+        time.sleep(15)
         comment_url = "https://api.trello.com/1/cards/{id}/actions/comments"
         comment_querystring = {"key": TRELLO_API_KEY, "token": TRELLO_API_SECRET, "text": comment_with_slack_handle}
         requests.request("POST", comment_url, params=comment_querystring)   
